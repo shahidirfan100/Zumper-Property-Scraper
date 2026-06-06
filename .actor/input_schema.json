@@ -1,0 +1,45 @@
+{
+  "title": "Zumper Property Scraper",
+  "description": "Scrape apartment and property listings from Zumper.com. Provide a Zumper URL to find rentals. Supports pagination, proxy configuration, and result limits.",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "url": {
+      "title": "Zumper URL",
+      "type": "string",
+      "description": "Full Zumper URL to scrape, e.g. https://www.zumper.com/apartments-for-rent/vancouver-bc.",
+      "editor": "textfield",
+      "prefill": "https://www.zumper.com/apartments-for-rent/vancouver-bc"
+    },
+    "results_wanted": {
+      "title": "Maximum results",
+      "type": "integer",
+      "description": "Maximum number of property listings to collect.",
+      "minimum": 1,
+      "default": 100,
+      "prefill": 20,
+      "editor": "number"
+    },
+    "max_pages": {
+      "title": "Maximum pages",
+      "type": "integer",
+      "description": "Maximum number of search result pages to visit.",
+      "minimum": 1,
+      "default": 20,
+      "prefill": 2,
+      "editor": "number"
+    },
+    "proxyConfiguration": {
+      "title": "Proxy configuration",
+      "type": "object",
+      "description": "Apify Proxy settings. Residential proxies recommended for Zumper.",
+      "editor": "proxy",
+      "default": {
+        "useApifyProxy": true,
+        "apifyProxyGroups": ["RESIDENTIAL"]
+      }
+    }
+  },
+  "required": [],
+  "additionalProperties": false
+}

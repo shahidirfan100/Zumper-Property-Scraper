@@ -1,0 +1,93 @@
+{
+  "actorSpecification": 1,
+  "fields": {},
+  "views": {
+    "overview": {
+      "title": "Overview",
+      "transformation": {
+        "fields": [
+          "title",
+          "building_name",
+          "address",
+          "neighborhood",
+          "city",
+          "state",
+          "min_price",
+          "max_price",
+          "min_bedrooms",
+          "max_bedrooms",
+          "sqft",
+          "property_type",
+          "rating",
+          "url",
+          "image_gallery"
+        ]
+      },
+      "display": {
+        "component": "table",
+        "properties": {
+          "title": {
+            "label": "Title",
+            "format": "text"
+          },
+          "building_name": {
+            "label": "Building",
+            "format": "text"
+          },
+          "address": {
+            "label": "Address",
+            "format": "text"
+          },
+          "neighborhood": {
+            "label": "Neighborhood",
+            "format": "text"
+          },
+          "city": {
+            "label": "City",
+            "format": "text"
+          },
+          "state": {
+            "label": "State",
+            "format": "text"
+          },
+          "min_price": {
+            "label": "Min Price",
+            "format": "text"
+          },
+          "max_price": {
+            "label": "Max Price",
+            "format": "text"
+          },
+          "min_bedrooms": {
+            "label": "Min Beds",
+            "format": "text"
+          },
+          "max_bedrooms": {
+            "label": "Max Beds",
+            "format": "text"
+          },
+          "sqft": {
+            "label": "Sq Ft",
+            "format": "text"
+          },
+          "property_type": {
+            "label": "Type",
+            "format": "text"
+          },
+          "rating": {
+            "label": "Rating",
+            "format": "text"
+          },
+          "url": {
+            "label": "URL",
+            "format": "link"
+          },
+          "image_gallery": {
+            "label": "Images",
+            "format": "text"
+          }
+        }
+      }
+    }
+  }
+}
