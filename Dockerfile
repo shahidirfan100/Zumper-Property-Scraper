@@ -1,4 +1,4 @@
-FROM apify/actor-node-playwright-firefox:24-1.59.1
+FROM apify/actor-node:24
 
 COPY --chown=myuser:myuser package*.json Dockerfile ./
 

@@ -7,8 +7,10 @@ Extract comprehensive apartment and rental property listings from Zumper.com wit
 - **City-wide extraction** — Scrape all apartment listings from any Zumper city or neighborhood page
 - **Automatic pagination** — Handles multi-page results automatically to collect your desired number of listings
 - **Rich property data** — Extracts pricing, bedrooms, bathrooms, square footage, amenities, ratings, and more
+- **Faster collection** — Completes city and neighborhood runs much more quickly for the same result counts
 - **Image galleries** — Collects full-size property image URLs for every listing
 - **Amenity mapping** — Converts numeric amenity codes into readable names for easy analysis
+- **Duplicate protection** — Skips repeated listings across featured and paginated results
 - **No null fields** — Clean dataset with empty fields automatically removed
 - **Proxy support** — Built-in proxy configuration for reliable data collection at scale
 

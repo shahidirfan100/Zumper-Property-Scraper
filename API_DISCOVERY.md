@@ -2,9 +2,9 @@
 
 ## Selected API
 
-- **Source:** `window.__PRELOADED_STATE__` (React server-side hydration payload embedded in HTML)
-- **Method:** Browser page load (Playwright Firefox) → `page.evaluate()` to extract JS object
-- **Auth:** None required — payload is server-rendered into every search page
+- **Source:** `window.__PRELOADED_STATE__` (React hydration payload embedded in the search HTML)
+- **Method:** Direct HTTP GET to the public search URL, then parse the embedded JSON payload
+- **Auth:** None required
 - **Pagination:** Query parameter `?page=N` appended to any `/apartments-for-rent/` URL
 - **Fields available:** 55+ per listing (see full list below)
 - **Fields extracted:** 21 (all non-null, cleaned)
@@ -16,7 +16,11 @@
 
 ### 1. URLScan.io Network Analysis
 
-Searched URLScan.io for `domain:zumper.com` scans. Found no standalone JSON API endpoints (no `/api/v1/listings` or `/graphql` endpoints returning listing data directly).
+Searched URLScan.io for `domain:zumper.com` scans and validated the same patterns in a live browser session. The most relevant JSON endpoint discovered was:
+
+- `POST /api/svc/inventory/v1/listables/maplist/pins`
+
+This endpoint is usable, but it exposes materially fewer fields than the hydration payload and is therefore not the best source for preserving the actor's current output richness.
 
 ### 2. Checked Standard JSON Sources (in parallel)
 
@@ -24,7 +28,7 @@ Searched URLScan.io for `domain:zumper.com` scans. Found no standalone JSON API 
 |--------|--------|
 | `script#__NEXT_DATA__` | Not present — Zumper does not use Next.js |
 | `script[type="application/ld+json"]` | Only basic site metadata, no listing data |
-| XHR/fetch JSON endpoints | No standalone listing API found in network tab |
+| XHR/fetch JSON endpoints | `POST /api/svc/inventory/v1/listables/maplist/pins` found, but field coverage is weaker |
 | `window.__INITIAL_STATE__` | Not present |
 | **`window.__PRELOADED_STATE__`** | **Contains full listing data — WINNER** |
 
@@ -38,6 +42,16 @@ Searched URLScan.io for `domain:zumper.com` scans. Found no standalone JSON API 
 | Has pagination support (`?page=N`) | +15 |
 | Matches and extends all desired fields | +10 |
 | **Total** | **100** |
+
+### 4. Weaker Candidate Rejected
+
+`POST /api/svc/inventory/v1/listables/maplist/pins`
+
+- **Method:** `POST`
+- **Auth:** Requires CSRF bootstrap header from `/api/t/1/bundle`
+- **Pagination:** `limit` plus a growing `groupIds.exclude` list
+- **Why rejected:** Fast and replayable, but returns fewer fields than the existing actor output. Missing or weaker fields include detailed amenities, building amenities, rating, and other rich listing metadata that already exist in `__PRELOADED_STATE__`.
+- **Conclusion:** Useful as a fallback endpoint, but not the best primary extraction source.
 
 ---
 
@@ -245,19 +259,9 @@ Zumper encodes amenities as numeric codes. The actor maps these to human-readabl
 
 ---
 
-## Why Browser (Playwright Firefox) Is Required
+## Why Direct HTTP Was Selected
 
-The `__PRELOADED_STATE__` payload is a JavaScript object embedded in the page HTML via a `<script>` tag. While theoretically extractable from raw HTML via regex, in practice:
-
-1. **Zumper uses anti-bot protections** — Direct HTTP requests to search pages may receive a challenge page or redirect
-2. **Cookie/session requirements** — The hydration payload requires cookies set by prior JS execution
-3. **Resource blocking** — Playwright allows blocking images, fonts, ads, and analytics to speed up page loads significantly
-4. **Fingerprinting** — Firefox with custom fingerprints avoids detection
-
-The actor uses Playwright Firefox in headless mode with:
-- Resource blocking (images, ads, analytics, tracking scripts)
-- Session pooling and browser fingerprinting
-- `waitForFunction` to ensure `__PRELOADED_STATE__` is available before extraction
+The `__PRELOADED_STATE__` payload is embedded in the HTML returned by the public search page, so a browser is not required for normal collection. Direct HTTP requests preserve the richer field coverage while removing the slow browser-navigation bottleneck between pages.
 
 ---
 
@@ -265,7 +269,7 @@ The actor uses Playwright Firefox in headless mode with:
 
 | Approach | Why Rejected |
 |----------|-------------|
-| Direct HTTP API call (`gotScraping`) | No standalone JSON API found; Zumper serves data only via hydration payload |
+| `POST /api/svc/inventory/v1/listables/maplist/pins` | Faster JSON API, but weaker field coverage than the hydration payload |
 | `__NEXT_DATA__` | Zumper does not use Next.js framework |
 | JSON-LD structured data | Only contains basic site metadata (name, logo), no listing data |
 | HTML/DOM parsing | Fragile, fewer fields, requires maintaining CSS selectors |

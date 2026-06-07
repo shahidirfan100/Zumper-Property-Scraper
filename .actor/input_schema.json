@@ -35,8 +35,7 @@
       "description": "Apify Proxy settings. Residential proxies recommended for Zumper.",
       "editor": "proxy",
       "default": {
-        "useApifyProxy": true,
-        "apifyProxyGroups": ["RESIDENTIAL"]
+        "useApifyProxy": false
       }
     }
   },
