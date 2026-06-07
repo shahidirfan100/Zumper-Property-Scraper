@@ -1,3 +1,5 @@
+import { readFile } from 'node:fs/promises';
+
 import { Actor, log } from 'apify';
 import { Dataset } from 'crawlee';
 import { gotScraping } from 'got-scraping';
@@ -283,16 +285,39 @@ function pageReferer(url) {
     return refererUrl.href;
 }
 
+async function loadFallbackInput() {
+    try {
+        const fallbackInput = await readFile(new URL('../INPUT.json', import.meta.url), 'utf8');
+        return JSON.parse(fallbackInput);
+    } catch (error) {
+        log.warning(`Could not load INPUT.json fallback: ${error.message}`);
+        return {};
+    }
+}
+
+function hasRuntimeInput(input) {
+    return Boolean(input) && Object.keys(input).length > 0;
+}
+
 async function main() {
     await Actor.init();
 
     try {
-        const input = (await Actor.getInput()) || {};
+        const runtimeInput = (await Actor.getInput()) || {};
+        const fallbackInput = await loadFallbackInput();
+        const input = hasRuntimeInput(runtimeInput)
+            ? { ...fallbackInput, ...runtimeInput }
+            : fallbackInput;
+
+        if (!hasRuntimeInput(runtimeInput) && Object.keys(fallbackInput).length > 0) {
+            log.info('No runtime input provided. Falling back to INPUT.json defaults.');
+        }
+
         const {
             url: inputUrl,
             startUrl,
             startUrls,
-            results_wanted: resultsWantedRaw = 100,
+            results_wanted: resultsWantedRaw = 20,
             max_pages: maxPagesRaw = 20,
             proxyConfiguration,
         } = input;
