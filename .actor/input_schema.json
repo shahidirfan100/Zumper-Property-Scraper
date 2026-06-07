@@ -16,7 +16,7 @@
       "type": "integer",
       "description": "Maximum number of property listings to collect.",
       "minimum": 1,
-      "default": 100,
+      "default": 20,
       "prefill": 20,
       "editor": "number"
     },
